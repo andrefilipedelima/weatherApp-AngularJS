@@ -1,0 +1,17 @@
+Places for {{ city }}- {{ weatherResult.list.sys.country }}
+<div ng-repeat="city in weatherResult.list">
+    <div class="row">
+        <button class="col-md-6" ng-click="getCityCoord(city.coord)">
+            <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">{{ city.name }} - {{ convertToDate(city.dt) | date: 'dd/MM/yy'}} </h3>
+                    </div>
+                    <div class="panel-body">
+                        {{ convertToCelsius(city.main.temp) }}°C
+                    </div>
+        
+        
+            </button>               
+        </div>
+    </div>
+</div>

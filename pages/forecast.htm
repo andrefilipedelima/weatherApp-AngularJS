@@ -1,1 +1,18 @@
-Forecast for {{ city }}
+{{ city }} next 7 days
+<div class="'container" >
+        <div ng-repeat="day in forecastDays">
+            <div class="row">
+            <div class="col" >
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="panel-title" ng-if="$index === 0">Today</div>
+                        <div class="panel-title" ng-if="$index > 0">{{ convertToDate(day.dt) | date: 'dd/MM/yy'}} </div>
+                    </div>
+                    <div class="panel-body">
+                        {{ roundToCelsius(day.feels_like.day) }}°C
+                    </div>
+                </div>
+            </div>                    
+        </div>
+    </div>
+</div>
