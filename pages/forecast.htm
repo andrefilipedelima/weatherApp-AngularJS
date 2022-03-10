@@ -1,18 +1,26 @@
-{{ city }} next 7 days
+
+<p>
+    <a href="#">Back to search</a>
+</p>
+Forecast {{ city }} 
+<hr />
+Next Days: <a href="#/forecast/3" ng-class="{ 'bg-primary': days === '3' }">3</a> | <a href="#/forecast/5" ng-class="{ 'bg-primary': days === '5' }">5</a> | <a href="#/forecast/7" ng-class="{ 'bg-primary': days === '7' }">7</a>
+<hr />
 <div class="'container" >
-        <div ng-repeat="day in forecastDays">
-            <div class="row">
-            <div class="col" >
+    <div ng-repeat="day in (forecastDays).slice(0, days)">
+        <div class="row">
+            <div class="col-md-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <div class="panel-title" ng-if="$index === 0">Today</div>
-                        <div class="panel-title" ng-if="$index > 0">{{ convertToDate(day.dt) | date: 'dd/MM/yy'}} </div>
+                        <div class="panel-title" ng-if="$first">Today - {{ convertToDate(day.dt) | date: 'dd/MM/yy'}}</div>
+                        <div class="panel-title" ng-if="($index == 1)">Tomorrow - {{ convertToDate(day.dt) | date: 'dd/MM/yy'}}</div>
+                        <div class="panel-title" ng-if="($index > 1)">{{ convertToDate(day.dt) | date: 'EEEE'}} - {{ convertToDate(day.dt) | date: 'dd/MM/yy'}} </div>
                     </div>
                     <div class="panel-body">
-                        {{ roundToCelsius(day.feels_like.day) }}°C
+                    {{ roundToCelsius(day.feels_like.day) }}°C
                     </div>
-                </div>
-            </div>                    
-        </div>
+                </div> 
+            </div>
+        </div>                    
     </div>
 </div>
