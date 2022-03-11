@@ -1,0 +1,15 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        
+        <h3 class="panel-title">
+            <img
+            src="https://countryflagsapi.com/png/{{country}}"
+            width="16"
+            height="12"
+            alt="{{city.sys.country}} flag" /> 
+            {{city.name}}, {{city.sys.country}} - Today </h3>
+    </div>
+    <div class="panel-body">
+        {{ convertToCelsius({ temp: city.main.temp }) }}°C
+    </div>
+</div> 

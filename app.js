@@ -33,13 +33,21 @@ weatherApp.config(function ($routeProvider) {
 
 // SERVICES
 
-weatherApp.service('cityService', ['$http', '$q', function(){
+weatherApp.service('cityService', ['$location', function($location){
 
-    this.city = "New York";
+    this.city = "";
+    this.country= [];
     this.coord = [{ lat: "", lon: "" }];
     this.apiKey = "439d4b804bc8187953eb36d2a8c26a02";
     this.units = "metric";
     this.forecastDays = [];
+    this.weatherResult = [];
+    this.index = 1;
+
+    this.goTo = function(enter) {
+        if(enter.keyCode === 13)
+        $location.path('/city');
+    }
 
 }]);
 
@@ -47,28 +55,61 @@ weatherApp.service('cityService', ['$http', '$q', function(){
 
 
 // CONTROLLERS
-weatherApp.controller('homeController', ['$scope', 'cityService', function($scope, cityService) {
+weatherApp.controller('homeController', ['$scope', 'cityService', '$location', '$http', '$q', function($scope, cityService, $location, $http, $q) {
 
     $scope.city = cityService.city;
+    $scope.disabled = true;
+    $scope.q = "";
+    $scope.weatherResult = cityService.weatherResult;
 
     $scope.$watch('city', function() {
         cityService.city = $scope.city;
+        $scope.q = cityService.city.replace(' ', '%20');  
     });
+
+    $scope.$watch('weatherResult', function() {
+        cityService.weatherResult = $scope.weatherResult;
+    });
+
+    $scope.goTo = function(enter){
+        cityService.goTo(enter);
+        $scope.disabled = false;
+    }
+
+    $scope.getWeatherResult = function() {
+
+        var deferred = $q.defer();
+        $http.get("https://openweathermap.org/data/2.5/find?q=" + $scope.q + "&appid=" + cityService.apiKey + "&units=" + cityService.units,{ callback: "JSON_CALLBACK" }, { get: { method: "JSONP" }})
+        .then(function(response) {
+            deferred.resolve(response.data);
+            $scope.weatherResult = response.data;
+            $location.path('/city');
+          },
+          function(err){
+            deferred.reject(err);
+          })
+         
+        return $q.promise;
+    }
+    
+    
 
 }]);
 
 
-weatherApp.controller('cityController', ['$scope', 'cityService', '$routeParams', '$resource', '$location', '$http', '$q', function($scope, cityService, $routeParams, $resource, $location, $http, $q) {
+weatherApp.controller('cityController', ['$scope', 'cityService', '$routeParams', '$location', '$http', '$q', function($scope, cityService, $routeParams, $location, $http, $q) {
 
     $scope.city = cityService.city;
+    $scope.index = cityService.index;
+    $scope.country = cityService.country;
+    $scope.weatherResult = cityService.weatherResult;
 
     $scope.q = cityService.city.replace(' ', '%20');
     $scope.days = $routeParams.days || 3;
 
-
-    $scope.weatherAPI = $resource("https://openweathermap.org/data/2.5/find?q=" + $scope.q + "&appid=" + cityService.apiKey + "&units=" + cityService.units,{ callback: "JSON_CALLBACK" }, { get: { method: "JSONP" }});
-   
-    $scope.weatherResult = $scope.weatherAPI.get({ q: cityService.city, cnt: $scope.days  });
+    $scope.$watch('weatherResult', function() {
+        cityService.weatherResult = $scope.weatherResult;
+    });
 
 
     $scope.getCityCoord = function(coord) {
@@ -106,13 +147,21 @@ weatherApp.controller('cityController', ['$scope', 'cityService', '$routeParams'
         
     };
 
+    $scope.GetRowIndex = function (index) {
+        $scope.$watch('index', function() {
+                cityService.index = index;
+        });
+    };
 
 }]);
 
 weatherApp.controller('forecastController', ['$scope', 'cityService', '$routeParams', function($scope, cityService, $routeParams) {
 
     $scope.city = cityService.city;
+    $scope.index = cityService.index;
+    $scope.weatherResult = cityService.weatherResult;
     $scope.forecastDays = cityService.forecastDays;
+    $scope.country = $scope.weatherResult.list[$scope.index].sys.country;
     $scope.days = $routeParams.days || '3';
    
     $scope.roundToCelsius = function(celsius) {
@@ -129,3 +178,18 @@ weatherApp.controller('forecastController', ['$scope', 'cityService', '$routePar
 
 }]);
 
+
+// DIRECTIVES
+
+weatherApp.directive("cityReport", function () {
+    return {
+        restrict: 'E',
+        templateUrl: 'directives/cityReport.htm',
+        replace: true,
+        scope: {
+            city: "=",
+            convertToCelsius: '&',
+            country: "="
+        }
+    }
+});

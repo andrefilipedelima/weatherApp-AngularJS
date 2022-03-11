@@ -1,9 +1,10 @@
 <div class="'row">
     <div class="col-md-6 col-md-offset-3 ">
-        <h4>Weather in your city</h4>
-        <div class="form-group">
-            <input type="text" ng-model="city" class="form-control" />
-        </div>
-        <a href="#/city" class="btn btn-primary">Get Forecast</a>
+        <form name="myForm" ng-controller="homeController" class="my-form">
+            <div class="form-group">
+                <input type="text" ng-model="city" class="form-control" placeholder="Weather in your city"  ng-keypress="goTo($event)" required />
+            </div>
+            <a class="btn btn-primary" ng-disabled="myForm.$error.required" ng-click="getWeatherResult()">Get Forecast</a>  
+        </form>
     </div>
 </div>
