@@ -1,10 +1,13 @@
 <div class="'row">
     <div class="col-md-6 col-md-offset-3 ">
-        <form name="myForm" ng-controller="homeController" class="my-form">
-            <div class="form-group">
-                <input type="text" ng-model="city" class="form-control" placeholder="Weather in your city"  ng-keypress="goTo($event)" required />
-            </div>
-            <a class="btn btn-primary" ng-disabled="myForm.$error.required" ng-click="getWeatherResult()">Get Forecast</a>  
+        <form  ng-submit="submit(city)" name="myForm">
+            <div class="my-form">
+                <div class="form-group">
+                    <input type="text" ng-model="city" class="form-control" placeholder="Weather in your city"  ng-keypress="goTo($event)" required />
+                </div>
+                <input  type="submit" class="btn btn-primary" value="Get Forecast" ng-disabled="myForm.$invalid" />
+            </div> 
+         
         </form>
     </div>
 </div>
